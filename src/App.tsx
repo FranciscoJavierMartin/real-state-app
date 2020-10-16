@@ -5,9 +5,10 @@ import theme from './theme/Theme';
 import Navbar from './layout/Navbar';
 import { Grid } from '@material-ui/core';
 import { Route, Switch } from 'react-router-dom';
-import { HOME_LIST_ROUTE, REGISTER_USER_ROUTE } from './common/routes';
+import { HOME_LIST_ROUTE, LOGIN_USER_ROUTE, REGISTER_USER_ROUTE } from './common/routes';
 import Page404 from './pages/Page404';
 import RegisterUserPage from './pages/RegisterUserPage';
+import LoginUserPage from './pages/LoginUserPage';
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,11 @@ const App: React.FC = () => {
             exact
             path={REGISTER_USER_ROUTE}
             component={RegisterUserPage}
+          />
+          <Route
+            exact
+            path={LOGIN_USER_ROUTE}
+            component={LoginUserPage}
           />
           <Route path='*'>
             <Page404 />

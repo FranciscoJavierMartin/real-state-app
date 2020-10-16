@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Avatar,
-  Button,
   Container,
   createStyles,
   Grid,
@@ -12,6 +11,9 @@ import {
   withStyles,
 } from '@material-ui/core';
 import LockOutlineIcon from '@material-ui/icons/LockOutlined';
+import { registerUser } from '../api/firestore';
+import LoadingButton from '../common/components/LoadingButton';
+import { IRegisterFormValues } from '../common/interfaces/forms';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -38,17 +40,10 @@ const styles = (theme: Theme) =>
     },
   });
 
-interface IFormValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
-
 interface IRegisterUserPageProps extends WithStyles<typeof styles> {}
 
 const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
-  const [formValues, setFormValues] = useState<IFormValues>({
+  const [formValues, setFormValues] = useState<IRegisterFormValues>({
     firstName: '',
     lastName: '',
     email: '',
@@ -68,6 +63,9 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log(formValues);
+    registerUser(formValues).then((res: any) => {
+      console.log(res);
+    });
   };
 
   return (
@@ -122,7 +120,7 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
           </Grid>
           <Grid container justify='center'>
             <Grid item xs={12} md={6}>
-              <Button
+              <LoadingButton
                 type='submit'
                 variant='contained'
                 fullWidth
@@ -131,7 +129,7 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
                 className={classes.submit}
               >
                 Register
-              </Button>
+              </LoadingButton>
             </Grid>
           </Grid>
         </form>
