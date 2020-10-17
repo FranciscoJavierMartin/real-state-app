@@ -1,6 +1,6 @@
 export interface ILoginFormValues {
-  email: '',
-  password: '',
+  email: string,
+  password: string,
 }
 
 export interface IRegisterFormValues {

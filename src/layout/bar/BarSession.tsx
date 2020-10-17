@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   createStyles,
   Theme,
@@ -9,6 +10,7 @@ import {
   Button,
   IconButton,
 } from '@material-ui/core';
+import { LOGIN_USER_ROUTE } from '../../common/routes';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -32,6 +34,12 @@ const styles = (theme: Theme) =>
 interface IBarSessionProps extends WithStyles<typeof styles> {}
 
 const BarSession: React.FC<IBarSessionProps> = ({ classes }) => {
+  const history = useHistory();
+
+  const goToLogin = (): void => {
+    history.push(LOGIN_USER_ROUTE);
+  };
+
   return (
     <Toolbar>
       <IconButton color='inherit'>
@@ -40,7 +48,9 @@ const BarSession: React.FC<IBarSessionProps> = ({ classes }) => {
       <Typography variant='h6'>Holiday Homes</Typography>
       <div className={classes.grow}></div>
       <div className={classes.sectionDesktop}>
-        <Button color='inherit'>Login</Button>
+        <Button color='inherit' onClick={goToLogin}>
+          Login
+        </Button>
       </div>
       <div className={classes.sectionMobile}>
         <IconButton color='inherit'>

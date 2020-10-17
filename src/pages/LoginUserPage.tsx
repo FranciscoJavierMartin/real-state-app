@@ -12,6 +12,10 @@ import {
 import LockOutlineIcon from '@material-ui/icons/LockOutlined';
 import LoadingButton from '../common/components/LoadingButton';
 import { ILoginFormValues } from '../common/interfaces/forms';
+import { loginUser } from '../api/auth';
+import { useHistory } from 'react-router-dom';
+import { HOME_LIST_ROUTE } from '../common/routes';
+import CustomSnackbar from '../common/components/CustomSnackbar';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -34,7 +38,14 @@ const styles = (theme: Theme) =>
 interface ILoginUserPageProps extends WithStyles<typeof styles> {}
 
 const LoginUserPage: React.FC<ILoginUserPageProps> = ({ classes }) => {
+  const history = useHistory();
+  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [formValues, setFormValues] = useState<ILoginFormValues>({
+    email: '',
+    password: '',
+  });
+  const [formErrorValues, setFormErrorValues] = useState<ILoginFormValues>({
     email: '',
     password: '',
   });
@@ -49,14 +60,48 @@ const LoginUserPage: React.FC<ILoginUserPageProps> = ({ classes }) => {
     });
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     event.preventDefault();
-    console.log(formValues);
+    const { email, password } = formValues;
+    let isValid = true;
+
+    if (!email) {
+      isValid = false;
+      setFormErrorValues({
+        ...formErrorValues,
+        email: 'Email is required',
+      });
+    }
+
+    if (!password) {
+      isValid = false;
+      setFormErrorValues({
+        ...formErrorValues,
+        password: 'Password is required',
+      });
+    }
+
+    if (isValid) {
+      try {
+        await loginUser(formValues);
+        history.push(HOME_LIST_ROUTE);
+      } catch (error) {
+        setOpenSnackbar(true);
+        setSnackbarMessage(error.message);
+      }
+    }
   };
 
   return (
     <Container maxWidth='xs'>
       <div className={classes.paper}>
+        <CustomSnackbar
+          open={openSnackbar}
+          setOpenSnackbar={setOpenSnackbar}
+          message={snackbarMessage}
+        />
         <Avatar className={classes.avatar}>
           <LockOutlineIcon />
         </Avatar>
@@ -72,7 +117,8 @@ const LoginUserPage: React.FC<ILoginUserPageProps> = ({ classes }) => {
             margin='normal'
             value={formValues.email}
             onChange={handleInputChange}
-            required
+            error={!!formErrorValues.email}
+            helperText={formErrorValues.email}
           />
           <TextField
             variant='outlined'
@@ -83,7 +129,8 @@ const LoginUserPage: React.FC<ILoginUserPageProps> = ({ classes }) => {
             margin='normal'
             value={formValues.password}
             onChange={handleInputChange}
-            required
+            error={!!formErrorValues.password}
+            helperText={formErrorValues.password}
           />
           <LoadingButton
             fullWidth

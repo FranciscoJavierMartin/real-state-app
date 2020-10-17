@@ -11,9 +11,12 @@ import {
   withStyles,
 } from '@material-ui/core';
 import LockOutlineIcon from '@material-ui/icons/LockOutlined';
-import { registerUser } from '../api/firestore';
+import { loginUser, registerUser } from '../api/auth';
 import LoadingButton from '../common/components/LoadingButton';
 import { IRegisterFormValues } from '../common/interfaces/forms';
+import { useHistory } from 'react-router-dom';
+import { HOME_LIST_ROUTE } from '../common/routes';
+import CustomSnackbar from '../common/components/CustomSnackbar';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -43,7 +46,16 @@ const styles = (theme: Theme) =>
 interface IRegisterUserPageProps extends WithStyles<typeof styles> {}
 
 const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
+  const history = useHistory();
+  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [formValues, setFormValues] = useState<IRegisterFormValues>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  });
+  const [formErrorValues, setFormErrorValues] = useState<IRegisterFormValues>({
     firstName: '',
     lastName: '',
     email: '',
@@ -60,17 +72,67 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
     });
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     event.preventDefault();
-    console.log(formValues);
-    registerUser(formValues).then((res: any) => {
-      console.log(res);
-    });
+    let isValid = true;
+
+    if (!formValues.firstName) {
+      isValid = false;
+      setFormErrorValues({
+        ...formErrorValues,
+        firstName: 'First name is required',
+      });
+    }
+
+    if (!formValues.lastName) {
+      isValid = false;
+      setFormErrorValues({
+        ...formErrorValues,
+        lastName: 'Last name is required',
+      });
+    }
+
+    if (!formValues.email) {
+      isValid = false;
+      setFormErrorValues({
+        ...formErrorValues,
+        email: 'Email is required',
+      });
+    }
+
+    if (!formValues.password) {
+      isValid = false;
+      setFormErrorValues({
+        ...formErrorValues,
+        password: 'Password is required',
+      });
+    }
+
+    if (isValid) {
+      try {
+        await registerUser(formValues);
+        await loginUser({
+          email: formValues.email,
+          password: formValues.password,
+        });
+        history.push(HOME_LIST_ROUTE);
+      } catch (error) {
+        setOpenSnackbar(true);
+        setSnackbarMessage(error.message);
+      }
+    }
   };
 
   return (
     <Container maxWidth='md'>
       <div className={classes.paper}>
+        <CustomSnackbar
+          open={openSnackbar}
+          setOpenSnackbar={setOpenSnackbar}
+          message={snackbarMessage}
+        />
         <Avatar className={classes.avatar}>
           <LockOutlineIcon />
         </Avatar>
@@ -86,6 +148,8 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
                 label='Name'
                 value={formValues.firstName}
                 onChange={handlerInputChange}
+                error={!!formErrorValues.firstName}
+                helperText={formErrorValues.firstName}
               />
             </Grid>
             <Grid item md={6} xs={12} className={classes.formInput}>
@@ -95,6 +159,8 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
                 label='Last name'
                 value={formValues.lastName}
                 onChange={handlerInputChange}
+                error={!!formErrorValues.lastName}
+                helperText={formErrorValues.lastName}
               />
             </Grid>
             <Grid item md={6} xs={12} className={classes.formInput}>
@@ -105,6 +171,8 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
                 label='Email address'
                 value={formValues.email}
                 onChange={handlerInputChange}
+                error={!!formErrorValues.email}
+                helperText={formErrorValues.email}
               />
             </Grid>
             <Grid item md={6} xs={12} className={classes.formInput}>
@@ -115,6 +183,8 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
                 label='Password'
                 value={formValues.password}
                 onChange={handlerInputChange}
+                error={!!formErrorValues.password}
+                helperText={formErrorValues.password}
               />
             </Grid>
           </Grid>
