@@ -1,7 +1,6 @@
 import { loginUser, registerUser, logoutUser } from '../api/auth';
 import { sessionActionNames } from '../common/constants/actionNames';
 import { IRegisterFormValues } from '../common/interfaces/forms';
-import { auth } from '../api/firebase';
 
 export function initSession(dispatch: any, payload: any) {
   const { email, password } = payload;

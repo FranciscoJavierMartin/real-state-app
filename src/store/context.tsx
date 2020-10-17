@@ -1,18 +1,39 @@
 import React, { createContext, useContext, useReducer } from 'react';
-import { IRootState } from '../common/interfaces/context';
-import { initialState } from './authReducer';
+import { IRootState } from '../common/interfaces/states';
+import { authInitialState } from './authReducer';
+import { mainReducer } from './reducer';
+import { snackbarInitialState } from './snackbarReducer';
 
-export const Context = createContext<any>(initialState);
+const initialState: IRootState = {
+  auth: authInitialState,
+  snackbar: snackbarInitialState,
+};
 
-export const Provider: React.FC<any> = ({
-  reducer,
-  initialState,
-  children,
-}) => (
-  <Context.Provider value={useReducer(reducer, initialState)}>
-    {children}
-  </Context.Provider>
-);
+// <{
+//   state: IRootState;
+//   dispatch: React.Dispatch<any>;
+// }>
+// export const Context = createContext({ state: initialState, dispatch: () => null });
+
+interface IStateContext {
+  state: IRootState;
+  dispatch: ({ type }: { type: string }) => void;
+}
+
+export const Context = createContext({} as IStateContext);
+
+const asyncer = (dispatch: any, state: IRootState) => (action: any) =>
+  typeof action === 'function' ? action(dispatch, state) : dispatch(action);
+
+export const Provider: React.FC<any> = ({children}) => {
+  const [_state, dispatchBase] = useReducer(mainReducer, initialState);
+  const state = _state as IRootState;
+  const dispatch = React.useCallback(asyncer(dispatchBase, state), []);
+
+  return (
+    <Context.Provider value={{ state, dispatch }}>{children}</Context.Provider>
+  );
+};
 
 export const useStateValue = () => useContext(Context);
 

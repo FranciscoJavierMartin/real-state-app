@@ -1,7 +1,8 @@
 import { sessionActionNames } from '../common/constants/actionNames';
-import { IActionType, IRootState } from '../common/interfaces/context';
+import { IAuthState } from '../common/interfaces/states';
+import { IAuthAction } from '../common/interfaces/actions';
 
-export const initialState: IRootState = {
+export const authInitialState: IAuthState = {
   user: {
     firstName: '',
     lastName: '',
@@ -13,8 +14,8 @@ export const initialState: IRootState = {
   isAuthenticated: false,
 };
 
-export function authReducer(state: IRootState = initialState, action: IActionType): IRootState {
-  let res: IRootState;
+export function authReducer(state: IAuthState = authInitialState, action: IAuthAction): IAuthState {
+  let res: IAuthState;
 
   switch (action.type) {
     case sessionActionNames.INIT_SESSION:

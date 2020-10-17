@@ -1,9 +1,11 @@
+import { ISnackbarAction, IAuthAction } from '../common/interfaces/actions';
+import { IRootState } from '../common/interfaces/states';
 import { authReducer } from './authReducer';
 import { snackbarReducer } from './snackbarReducer';
 
-export function mainReducer({ auth, openSnackbar }: any, action: any) {
+export function mainReducer({ auth, snackbar }: IRootState, action: IAuthAction | ISnackbarAction) {
   return {
-    auth: authReducer(auth, action),
-    openSnackbar: snackbarReducer(openSnackbar, action),
+    auth: authReducer(auth, action as IAuthAction),
+    openSnackbar: snackbarReducer(snackbar, action as ISnackbarAction),
   };
 }

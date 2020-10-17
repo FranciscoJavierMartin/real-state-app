@@ -6,4 +6,5 @@ export enum sessionActionNames {
 
 export enum snackbarActionNames {
   OPEN_SNACKBAR = 'OPEN_SNACKBAR',
+  CLOSE_SNACKBAR = 'CLOSE_SNACKBAR',
 }

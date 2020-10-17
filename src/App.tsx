@@ -13,8 +13,7 @@ import {
 import Page404 from './pages/Page404';
 import RegisterUserPage from './pages/RegisterUserPage';
 import LoginUserPage from './pages/LoginUserPage';
-import { useStateValue } from './store/context';
-import { snackbarReducer } from './store/snackbarReducer';
+import { useStateValue } from './store/Context';
 import { snackbarActionNames } from './common/constants/actionNames';
 
 const App: React.FC = () => {

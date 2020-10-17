@@ -18,7 +18,7 @@ import { HOME_LIST_ROUTE } from '../common/routes';
 import CustomSnackbar from '../common/components/CustomSnackbar';
 import { initSession } from '../store/authAction';
 import { openSnackabr } from '../store/snackbarActions';
-import { Context } from '../store/context';
+import { Context } from '../store/Context';
 
 const styles = (theme: Theme) =>
   createStyles({

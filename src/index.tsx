@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import App from './App';
-import { Context, Provider } from './store/context';
+import { Provider } from './store/Context';
 import * as serviceWorker from './serviceWorker';
 import { mainReducer } from './store/reducer';
 

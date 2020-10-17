@@ -1,6 +1,9 @@
-import { sessionActionNames } from '../constants/actionNames';
-
 export interface IRootState {
+  auth: IAuthState;
+  snackbar: ISnackbarState;
+}
+
+export interface IAuthState {
   user: {
     firstName: string;
     lastName: string;
@@ -12,7 +15,8 @@ export interface IRootState {
   isAuthenticated: boolean;
 }
 
-export interface IActionType {
-  type: sessionActionNames,
-  payload: any;
+export interface ISnackbarState {
+  isVisible: boolean;
+  message: string;
 }
+

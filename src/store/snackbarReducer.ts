@@ -1,12 +1,17 @@
 import { snackbarActionNames } from '../common/constants/actionNames';
+import { ISnackbarAction } from '../common/interfaces/actions';
+import { ISnackbarState } from '../common/interfaces/states';
 
-export const snackbarInitialState = {
+export const snackbarInitialState: ISnackbarState = {
   isVisible: false,
   message: '',
 };
 
-export function snackbarReducer(state = snackbarInitialState, action: any) {
-  let res;
+export function snackbarReducer(
+  state: ISnackbarState = snackbarInitialState,
+  action: ISnackbarAction
+): ISnackbarState {
+  let res: ISnackbarState;
 
   console.log(state, action);
 
