@@ -1,7 +1,20 @@
-import React from 'react';
-import { IRootContext } from '../common/interfaces/context';
+import React, { createContext, useContext, useReducer } from 'react';
+import { IRootState } from '../common/interfaces/context';
+import { initialState } from './authReducer';
 
-export const Context = React.createContext<IRootContext>({});
+export const Context = createContext<any>(initialState);
+
+export const Provider: React.FC<any> = ({
+  reducer,
+  initialState,
+  children,
+}) => (
+  <Context.Provider value={useReducer(reducer, initialState)}>
+    {children}
+  </Context.Provider>
+);
+
+export const useStateValue = () => useContext(Context);
 
 // export const Consumer = (Component: any) => (props: any) => (
 //   <Context.Consumer>

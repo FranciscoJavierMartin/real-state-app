@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Avatar,
   Container,
@@ -16,6 +16,9 @@ import { loginUser } from '../api/auth';
 import { useHistory } from 'react-router-dom';
 import { HOME_LIST_ROUTE } from '../common/routes';
 import CustomSnackbar from '../common/components/CustomSnackbar';
+import { initSession } from '../store/authAction';
+import { openSnackabr } from '../store/snackbarActions';
+import { Context } from '../store/context';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -38,6 +41,7 @@ const styles = (theme: Theme) =>
 interface ILoginUserPageProps extends WithStyles<typeof styles> {}
 
 const LoginUserPage: React.FC<ILoginUserPageProps> = ({ classes }) => {
+  const context = useContext(Context);
   const history = useHistory();
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<string>('');
@@ -85,8 +89,18 @@ const LoginUserPage: React.FC<ILoginUserPageProps> = ({ classes }) => {
 
     if (isValid) {
       try {
-        await loginUser(formValues);
-        history.push(HOME_LIST_ROUTE);
+        // await loginUser(formValues);
+        // history.push(HOME_LIST_ROUTE);
+        const [{ auth }, dispatch] = context;
+        let callback: any = await initSession(dispatch, formValues);
+        if (callback.status) {
+          history.push(HOME_LIST_ROUTE);
+        } else {
+          openSnackabr(dispatch, {
+            open: true,
+            message: callback.message,
+          });
+        }
       } catch (error) {
         setOpenSnackbar(true);
         setSnackbarMessage(error.message);

@@ -17,7 +17,7 @@ export async function registerUser(
     const userProfile: Partial<IRegisterFormValues> = { ...userData };
     delete userProfile.password;
 
-    await db
+    return await db
       .collection(USERS_COLLECTION_NAME)
       .doc(user.user?.uid)
       .set(userProfile);
@@ -26,9 +26,16 @@ export async function registerUser(
   }
 }
 
-export function loginUser({
+export async function loginUser({
   email,
   password,
-}: ILoginFormValues): Promise<firebase.auth.UserCredential> {
-  return auth.signInWithEmailAndPassword(email, password);
+}: ILoginFormValues): Promise<
+  firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
+> {
+  const user = await auth.signInWithEmailAndPassword(email, password);
+  return await db.collection(USERS_COLLECTION_NAME).doc(user.user?.uid).get();
+}
+
+export async function logoutUser(): Promise<void> {
+  await auth.signOut();
 }
