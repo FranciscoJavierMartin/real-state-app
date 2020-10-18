@@ -42,10 +42,8 @@ export function createUser(dispatch: any, user: IRegisterFormValues) {
             isAuthenticated: true,
           },
         });
-        resolve();
       })
       .catch((error) => {
-        console.log(error);
         dispatch({
           type: snackbarActionNames.OPEN_SNACKBAR,
           payload: {

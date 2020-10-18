@@ -24,7 +24,6 @@ export function authReducer(
       };
       break;
     case authActionNames.LOGOUT:
-      console.log('Hello')
       res = {
         ...state,
         user: {

@@ -27,8 +27,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-      console.log(userAuth);
-
       if (userAuth) {
         const user = await getUserProfile(userAuth?.uid);
         dispatch({
