@@ -1,4 +1,4 @@
-export enum sessionActionNames {
+export enum authActionNames {
   INIT_SESSION = 'INIT_SESSION',
   CHANGE_SESSION = 'CHANGE_SESSION',
   LOGOUT = 'LOGOUT',

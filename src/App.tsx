@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import HomeListPage from './pages/HomeListPage';
 import theme from './theme/Theme';
@@ -13,12 +13,46 @@ import {
 import Page404 from './pages/Page404';
 import RegisterUserPage from './pages/RegisterUserPage';
 import LoginUserPage from './pages/LoginUserPage';
-import { useStateValue } from './store/Context';
-import { snackbarActionNames } from './common/constants/actionNames';
+import { useStateValue } from './store/StateProvider';
+import {
+  authActionNames,
+  snackbarActionNames,
+} from './common/constants/actionNames';
+import { auth } from './api/firebase';
+import { getUserProfile } from './api/auth';
 
 const App: React.FC = () => {
-  const [{ openSnackbar }, dispatch] = useStateValue();
-  console.log(openSnackbar);
+  const { state, dispatch } = useStateValue();
+  const { snackbar } = state;
+
+  useEffect(() => {
+    const unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      console.log(userAuth);
+
+      if (userAuth) {
+        const user = await getUserProfile(userAuth?.uid);
+        dispatch({
+          type: authActionNames.INIT_SESSION,
+          payload: {
+            user: {
+              ...user.data(),
+              id: user.id,
+            },
+          },
+        });
+      } else {
+        dispatch({
+          type: authActionNames.LOGOUT,
+        });
+      }
+    });
+
+    return () => {
+      if (unsubscribeFromAuth) {
+        unsubscribeFromAuth();
+      }
+    };
+  }, [dispatch]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -34,16 +68,12 @@ const App: React.FC = () => {
         }}
         onClose={() => {
           dispatch({
-            type: snackbarActionNames.OPEN_SNACKBAR,
-            payload: {
-              open: false,
-              message: '',
-            },
+            type: snackbarActionNames.CLOSE_SNACKBAR,
           });
         }}
-        open={openSnackbar ? openSnackbar.isVisible : false}
+        open={snackbar ? snackbar.isVisible : false}
         message={
-          <span id='message-id' style={{color: 'red'}}>{openSnackbar ? openSnackbar.message : ''}</span>
+          <span id='message-id'>{snackbar ? snackbar.message : ''}</span>
         }
       />
       <Grid container>

@@ -3,18 +3,17 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import App from './App';
-import { Provider } from './store/Context';
+import { StateProvider } from './store/StateProvider';
 import * as serviceWorker from './serviceWorker';
-import { mainReducer } from './store/reducer';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider initialState={{}} reducer={mainReducer}>
+    <StateProvider>
       <CssBaseline />
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </Provider>
+    </StateProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

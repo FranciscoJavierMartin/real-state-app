@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Avatar,
   Container,
@@ -15,10 +15,8 @@ import { ILoginFormValues } from '../common/interfaces/forms';
 import { loginUser } from '../api/auth';
 import { useHistory } from 'react-router-dom';
 import { HOME_LIST_ROUTE } from '../common/routes';
-import CustomSnackbar from '../common/components/CustomSnackbar';
-import { initSession } from '../store/authAction';
-import { openSnackabr } from '../store/snackbarActions';
-import { Context } from '../store/Context';
+import { useStateValue } from '../store/StateProvider';
+import { snackbarActionNames } from '../common/constants/actionNames';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -41,10 +39,8 @@ const styles = (theme: Theme) =>
 interface ILoginUserPageProps extends WithStyles<typeof styles> {}
 
 const LoginUserPage: React.FC<ILoginUserPageProps> = ({ classes }) => {
-  const context = useContext(Context);
+  const { dispatch } = useStateValue();
   const history = useHistory();
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [formValues, setFormValues] = useState<ILoginFormValues>({
     email: '',
     password: '',
@@ -89,21 +85,13 @@ const LoginUserPage: React.FC<ILoginUserPageProps> = ({ classes }) => {
 
     if (isValid) {
       try {
-        // await loginUser(formValues);
-        // history.push(HOME_LIST_ROUTE);
-        const [{ auth }, dispatch] = context;
-        let callback: any = await initSession(dispatch, formValues);
-        if (callback.status) {
-          history.push(HOME_LIST_ROUTE);
-        } else {
-          openSnackabr(dispatch, {
-            open: true,
-            message: callback.message,
-          });
-        }
+        await loginUser(formValues);
+        history.push(HOME_LIST_ROUTE);
       } catch (error) {
-        setOpenSnackbar(true);
-        setSnackbarMessage(error.message);
+        dispatch({
+          type: snackbarActionNames.OPEN_SNACKBAR,
+          payload: error.message,
+        });
       }
     }
   };
@@ -111,11 +99,6 @@ const LoginUserPage: React.FC<ILoginUserPageProps> = ({ classes }) => {
   return (
     <Container maxWidth='xs'>
       <div className={classes.paper}>
-        <CustomSnackbar
-          open={openSnackbar}
-          setOpenSnackbar={setOpenSnackbar}
-          message={snackbarMessage}
-        />
         <Avatar className={classes.avatar}>
           <LockOutlineIcon />
         </Avatar>

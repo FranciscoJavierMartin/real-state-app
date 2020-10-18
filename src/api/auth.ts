@@ -5,6 +5,14 @@ import {
   IRegisterFormValues,
 } from '../common/interfaces/forms';
 
+export async function getUserProfile(
+  id: string | undefined
+): Promise<
+  firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
+> {
+  return await db.collection(USERS_COLLECTION_NAME).doc(id).get();
+}
+
 export async function registerUser(
   userData: IRegisterFormValues
 ): Promise<void> {
@@ -32,8 +40,12 @@ export async function loginUser({
 }: ILoginFormValues): Promise<
   firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
 > {
-  const user = await auth.signInWithEmailAndPassword(email, password);
-  return await db.collection(USERS_COLLECTION_NAME).doc(user.user?.uid).get();
+  try {
+    const user = await auth.signInWithEmailAndPassword(email, password);
+    return getUserProfile(user.user?.uid);
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function logoutUser(): Promise<void> {

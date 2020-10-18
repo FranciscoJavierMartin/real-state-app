@@ -11,12 +11,13 @@ import {
   withStyles,
 } from '@material-ui/core';
 import LockOutlineIcon from '@material-ui/icons/LockOutlined';
-import { loginUser, registerUser } from '../api/auth';
 import LoadingButton from '../common/components/LoadingButton';
 import { IRegisterFormValues } from '../common/interfaces/forms';
 import { useHistory } from 'react-router-dom';
 import { HOME_LIST_ROUTE } from '../common/routes';
-import CustomSnackbar from '../common/components/CustomSnackbar';
+import { useStateValue } from '../store/StateProvider';
+import { snackbarActionNames } from '../common/constants/actionNames';
+import { createUser, initSession } from '../store/auth/authAction';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -46,9 +47,8 @@ const styles = (theme: Theme) =>
 interface IRegisterUserPageProps extends WithStyles<typeof styles> {}
 
 const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
+  const { dispatch } = useStateValue();
   const history = useHistory();
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
   const [formValues, setFormValues] = useState<IRegisterFormValues>({
     firstName: '',
     lastName: '',
@@ -112,15 +112,19 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
 
     if (isValid) {
       try {
-        await registerUser(formValues);
-        await loginUser({
+        await createUser(dispatch, formValues);
+        await initSession(dispatch, {
           email: formValues.email,
           password: formValues.password,
         });
         history.push(HOME_LIST_ROUTE);
       } catch (error) {
-        setOpenSnackbar(true);
-        setSnackbarMessage(error.message);
+        dispatch({
+          type: snackbarActionNames.OPEN_SNACKBAR,
+          payload: {
+            message: error.message,
+          },
+        });
       }
     }
   };
@@ -128,11 +132,6 @@ const RegisterUserPage: React.FC<IRegisterUserPageProps> = ({ classes }) => {
   return (
     <Container maxWidth='md'>
       <div className={classes.paper}>
-        <CustomSnackbar
-          open={openSnackbar}
-          setOpenSnackbar={setOpenSnackbar}
-          message={snackbarMessage}
-        />
         <Avatar className={classes.avatar}>
           <LockOutlineIcon />
         </Avatar>

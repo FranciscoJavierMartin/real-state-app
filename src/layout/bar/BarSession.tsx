@@ -11,6 +11,8 @@ import {
   IconButton,
 } from '@material-ui/core';
 import { LOGIN_USER_ROUTE } from '../../common/routes';
+import { useStateValue } from '../../store/StateProvider';
+import { logout } from '../../store/auth/authAction';
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -34,10 +36,15 @@ const styles = (theme: Theme) =>
 interface IBarSessionProps extends WithStyles<typeof styles> {}
 
 const BarSession: React.FC<IBarSessionProps> = ({ classes }) => {
+  const { dispatch } = useStateValue();
   const history = useHistory();
 
   const goToLogin = (): void => {
     history.push(LOGIN_USER_ROUTE);
+  };
+
+  const goToLogout = (): void => {
+    logout(dispatch);
   };
 
   return (
@@ -50,6 +57,9 @@ const BarSession: React.FC<IBarSessionProps> = ({ classes }) => {
       <div className={classes.sectionDesktop}>
         <Button color='inherit' onClick={goToLogin}>
           Login
+        </Button>
+        <Button color='inherit' onClick={goToLogout}>
+          Logout
         </Button>
       </div>
       <div className={classes.sectionMobile}>
