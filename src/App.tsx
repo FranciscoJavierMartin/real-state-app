@@ -9,6 +9,7 @@ import {
   HOME_LIST_ROUTE,
   LOGIN_USER_ROUTE,
   REGISTER_USER_ROUTE,
+  USER_PROFILE_ROUTE,
 } from './common/routes';
 import Page404 from './pages/Page404';
 import RegisterUserPage from './pages/RegisterUserPage';
@@ -20,6 +21,8 @@ import {
 } from './common/constants/actionNames';
 import { auth } from './api/firebase';
 import { getUserProfile } from './api/auth';
+import AuthenticatedRoute from './layout/AuthenticatedRoute';
+import UserProfilePage from './pages/UserProfilePage';
 
 const App: React.FC = () => {
   const { state, dispatch } = useStateValue();
@@ -27,7 +30,8 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-      if (userAuth) {
+      console.log(userAuth);
+      if (userAuth?.uid) {
         const user = await getUserProfile(userAuth?.uid);
         dispatch({
           type: authActionNames.INIT_SESSION,
@@ -54,7 +58,6 @@ const App: React.FC = () => {
 
   return (
     <MuiThemeProvider theme={theme}>
-      <Navbar />
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
@@ -76,13 +79,24 @@ const App: React.FC = () => {
       />
       <Grid container>
         <Switch>
-          <Route exact path={HOME_LIST_ROUTE} component={HomeListPage} />
           <Route
             exact
             path={REGISTER_USER_ROUTE}
             component={RegisterUserPage}
           />
           <Route exact path={LOGIN_USER_ROUTE} component={LoginUserPage} />
+          <>
+            <Navbar />
+            <Route
+              exact
+              path={USER_PROFILE_ROUTE}
+              component={UserProfilePage}/>
+            <Route
+              exact
+              path={HOME_LIST_ROUTE}
+              component={HomeListPage}
+            />
+          </>
           <Route path='*'>
             <Page404 />
           </Route>

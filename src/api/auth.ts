@@ -3,6 +3,7 @@ import { USERS_COLLECTION_NAME } from '../common/constants/firebase';
 import {
   ILoginFormValues,
   IRegisterFormValues,
+  IUserProfileFormValues,
 } from '../common/interfaces/forms';
 
 export async function getUserProfile(
@@ -50,4 +51,12 @@ export async function loginUser({
 
 export async function logoutUser(): Promise<void> {
   await auth.signOut();
+}
+
+export async function updateUserProfile(data: IUserProfileFormValues) {
+  const id = auth.currentUser?.uid;
+  return await db
+    .collection(USERS_COLLECTION_NAME)
+    .doc(id)
+    .set(data, { merge: true });
 }

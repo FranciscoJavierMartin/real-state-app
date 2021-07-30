@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Divider, List, ListItem, ListItemText } from '@material-ui/core';
+import { USER_PROFILE_ROUTE } from '../../common/routes';
 
 interface ILeftMenuProps {
   classes: Record<
@@ -20,7 +21,7 @@ const LeftMenu: React.FC<ILeftMenuProps> = ({ classes }) => {
   return (
     <div className={classes.list}>
       <List>
-        <ListItem component={Link} button to=''>
+        <ListItem button onClick={() => history.push(USER_PROFILE_ROUTE)}>
           <i className='material-icons'>account_box</i>
           <ListItemText
             classes={{ primary: classes.listItemText }}
